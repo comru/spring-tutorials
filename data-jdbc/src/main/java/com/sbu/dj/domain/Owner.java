@@ -3,7 +3,10 @@ package com.sbu.dj.domain;
 import lombok.*;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.Column;
+import org.springframework.data.relational.core.mapping.Embedded;
 import org.springframework.data.relational.core.mapping.Table;
+
+import static org.springframework.data.relational.core.mapping.Embedded.OnEmpty.USE_NULL;
 
 @Getter
 @Setter
@@ -15,5 +18,7 @@ public class Owner {
 
     @Column("OWNER_NAME")
     private final String name;
-    private final String address;
+
+    @Embedded(onEmpty = USE_NULL)
+    private final Address address;
 }

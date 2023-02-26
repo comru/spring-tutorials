@@ -1,9 +1,6 @@
 package com.sbu.dj;
 
-import com.sbu.dj.domain.Dog;
-import com.sbu.dj.domain.DogRepository;
-import com.sbu.dj.domain.Owner;
-import com.sbu.dj.domain.OwnerRepository;
+import com.sbu.dj.domain.*;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -27,8 +24,8 @@ class DataJdbcApplicationTests {
 
 	@BeforeEach
 	void setUp() {
-		Owner savedIvan = ownerRepository.save(new Owner("Ivan", "Russia"));
-		Owner savedMichael = ownerRepository.save(new Owner("Michael", "USA"));
+		Owner savedIvan = ownerRepository.save(new Owner("Ivan", new Address("Russia", "Moscow")));
+		Owner savedMichael = ownerRepository.save(new Owner("Michael", new Address("USA", "Washington")));
 
 		dogRepository.save(new Dog("Pretty", savedIvan.getOwnerId()));
 		dogRepository.save(new Dog("Bella", savedIvan.getOwnerId()));
