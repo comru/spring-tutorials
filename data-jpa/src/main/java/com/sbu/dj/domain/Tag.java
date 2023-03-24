@@ -8,7 +8,7 @@ import lombok.experimental.Accessors;
 
 @Getter
 @Setter
-@Accessors(fluent = true)
+@Accessors(chain = true)
 @Entity
 @Table(name = "tag")
 public class Tag extends BaseEntity {

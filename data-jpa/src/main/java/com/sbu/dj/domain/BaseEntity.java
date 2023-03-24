@@ -7,10 +7,10 @@ import org.hibernate.Hibernate;
 
 import java.util.Objects;
 
-@Getter
 @MappedSuperclass
 public class BaseEntity {
     @Id
+    @Getter
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     @Column(name = "id", nullable = false)
     private Long id;
