@@ -21,7 +21,7 @@ import java.util.Map;
 
 @Getter
 @Setter
-@Accessors(fluent = true)
+@Accessors(chain = true)
 @Document
 public class Person {
     @Id

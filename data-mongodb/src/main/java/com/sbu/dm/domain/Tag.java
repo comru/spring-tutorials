@@ -13,7 +13,7 @@ import java.util.Date;
 
 @Getter
 @Setter
-@Accessors(fluent = true)
+@Accessors(chain = true)
 @Document("tags")
 public class Tag {
     @Id

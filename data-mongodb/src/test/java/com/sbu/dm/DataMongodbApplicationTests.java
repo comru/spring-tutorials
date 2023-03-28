@@ -27,20 +27,20 @@ class DataMongodbApplicationTests {
 
 	@BeforeEach
 	void setUp() {
-		Account account = new Account().total(5F).tags(List.of(
-				new Tag().name("Project").status(ObjectInputFilter.Status.ALLOWED),
-				new Tag().name("Topic").status(ObjectInputFilter.Status.UNDECIDED).type("Help")
+		Account account = new Account().setTotal(5F).setTags(List.of(
+				new Tag().setName("Project").setStatus(ObjectInputFilter.Status.ALLOWED),
+				new Tag().setName("Topic").setStatus(ObjectInputFilter.Status.UNDECIDED).setType("Help")
 		));
 
 		personRepository.save(new Person()
-				.ssn(1)
-				.firstName("Ivan")
-				.lastName("Ivanov")
-				.bornDate(LocalDate.of(1990, Month.AUGUST, 1))
-				.accounts(List.of(account))
-				.address(new Address("Russia", "Moscow"))
-				.userData(Map.of("key1", "value1", "key2", "value2"))
-				.roles(List.of(1, 2, 3)));
+				.setSsn(1)
+				.setFirstName("Ivan")
+				.setLastName("Ivanov")
+				.setBornDate(LocalDate.of(1990, Month.AUGUST, 1))
+				.setAccounts(List.of(account))
+				.setAddress(new Address("Russia", "Moscow"))
+				.setUserData(Map.of("key1", "value1", "key2", "value2"))
+				.setRoles(List.of(1, 2, 3)));
 	}
 
 	@AfterEach
@@ -54,10 +54,10 @@ class DataMongodbApplicationTests {
 		Assertions.assertEquals(1, persons.size());
 
 		Person person = persons.get(0);
-		Assertions.assertEquals("Ivan", person.firstName());
-		Assertions.assertEquals("Ivanov", person.lastName());
+		Assertions.assertEquals("Ivan", person.getFirstName());
+		Assertions.assertEquals("Ivanov", person.getLastName());
 
-		List<Account> personAccounts = person.accounts();
+		List<Account> personAccounts = person.getAccounts();
 
 		Assertions.assertEquals(1, personAccounts.size());
 		Assertions.assertNull(personAccounts.get(0));
