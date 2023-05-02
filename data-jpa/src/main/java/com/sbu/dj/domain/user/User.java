@@ -7,7 +7,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 
-import java.util.LinkedHashSet;
+import java.util.HashSet;
 import java.util.Set;
 
 @Getter
@@ -35,11 +35,15 @@ public class User extends BaseEntity {
     @Column(name = "image", length = Integer.MAX_VALUE)
     private String image;
 
-    @ManyToMany
-    @JoinTable(name = "user_followers",
-            joinColumns = @JoinColumn(name = "user_id"),
-            inverseJoinColumns = @JoinColumn(name = "follower_id"))
-    private Set<User> users = new LinkedHashSet<>();
+    @ManyToMany(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
+    @JoinTable(
+            name = "users_follow",
+            joinColumns = @JoinColumn(name = "follower_id"),
+            inverseJoinColumns = @JoinColumn(name = "following_id"))
+    private Set<User> followings = new HashSet<>();
+
+    @ManyToMany(mappedBy = "followings", cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
+    private final Set<User> followers = new HashSet<>();
 
     @Transient
     private String token;

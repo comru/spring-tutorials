@@ -31,7 +31,7 @@ public class UserController {
     @SecurityRequirement(name = HttpHeaders.AUTHORIZATION)
     @GetMapping("/user")
     public ResponseEntity<UserDto> getCurrentUser() {
-        User user = userService.getCurrentUser();
+        User user = userService.getCurrentUserNN();
         UserDto userDto = userMapper.toUserDto(user);
         return ResponseEntity.ok(userDto);
     }
