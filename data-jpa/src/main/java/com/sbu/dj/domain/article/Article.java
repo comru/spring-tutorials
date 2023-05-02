@@ -1,16 +1,16 @@
-package com.sbu.dj.domain;
+package com.sbu.dj.domain.article;
 
+import com.sbu.dj.domain.AbstractAuditableEntity;
+import com.sbu.dj.domain.comment.Comment;
+import com.sbu.dj.domain.tag.Tag;
+import com.sbu.dj.domain.user.User;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
-import org.springframework.data.annotation.CreatedBy;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import java.time.Instant;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
@@ -20,7 +20,7 @@ import java.util.Set;
 @Entity
 @Table(name = "article")
 @EntityListeners(AuditingEntityListener.class)
-public class Article extends BaseEntity {
+public class Article extends AbstractAuditableEntity {
 
     @NotNull
     @Column(name = "slug", nullable = false)
@@ -52,20 +52,4 @@ public class Article extends BaseEntity {
             joinColumns = @JoinColumn(name = "article_id"),
             inverseJoinColumns = @JoinColumn(name = "favouring_users_id"))
     private Set<User> favouringUsers = new LinkedHashSet<>();
-
-    @NotNull
-    @CreatedBy
-    @ManyToOne(optional = false, fetch = FetchType.LAZY)
-    @JoinColumn(name = "author_id", nullable = false)
-    private User author;
-
-    @NotNull
-    @CreatedDate
-    @Column(name = "created_at", nullable = false)
-    private Instant createdAt;
-
-    @NotNull
-    @LastModifiedDate
-    @Column(name = "updated_at", nullable = false)
-    private Instant updatedAt;
 }

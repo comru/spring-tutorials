@@ -1,19 +1,28 @@
 package com.sbu.dj.domain;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
 import org.hibernate.Hibernate;
+import org.springframework.data.domain.Persistable;
 
 import java.util.Objects;
 
 @MappedSuperclass
-public class BaseEntity {
+public abstract class BaseEntity implements Persistable<Long> {
     @Id
-    @Getter
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     @Column(name = "id", nullable = false)
     private Long id;
+
+    @Override
+    public Long getId() {
+        return id;
+    }
+
+    @Transient
+    @Override
+    public boolean isNew() {
+        return getId() == null;
+    }
 
     @Override
     public boolean equals(Object o) {

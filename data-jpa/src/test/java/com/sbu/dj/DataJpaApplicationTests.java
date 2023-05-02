@@ -1,7 +1,7 @@
 package com.sbu.dj;
 
-import com.sbu.dj.domain.User;
-import com.sbu.dj.repository.UserRepository;
+import com.sbu.dj.domain.user.User;
+import com.sbu.dj.domain.user.UserRepository;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

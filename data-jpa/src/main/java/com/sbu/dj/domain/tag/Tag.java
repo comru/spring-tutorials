@@ -1,5 +1,6 @@
-package com.sbu.dj.domain;
+package com.sbu.dj.domain.tag;
 
+import com.sbu.dj.domain.BaseEntity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;

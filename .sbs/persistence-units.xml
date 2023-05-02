@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="SpringBootStudioPersistenceUnitConfig">
+    <persistence-units>
+      <persistence-unit moduleName="data-jpa.main" name="Default">
+        <packages>
+          <package value="com.sbu.dj" />
+        </packages>
+      </persistence-unit>
+      <persistence-unit moduleName="data-jdbc.main" name="Default">
+        <packages>
+          <package value="com.sbu.dj" />
+        </packages>
+      </persistence-unit>
+    </persistence-units>
+  </component>
+</project>
