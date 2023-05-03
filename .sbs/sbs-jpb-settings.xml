@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="SpringBootStudioDatabaseMigrationConfig">
+    <database-infos>
+      <database-info>
+        <dbms-id>postgres</dbms-id>
+        <mapping-types>
+          <mapping-type sql-type-parameter="Nothing">
+            <java-class>com.sbu.dj.domain.MyStringConverter</java-class>
+            <sql-type>text</sql-type>
+          </mapping-type>
+        </mapping-types>
+      </database-info>
+    </database-infos>
+  </component>
+  <component name="SpringBootStudioJpaPluginProjectConfig" mapperMethodToEntityPattern="to${ENTITY_NAME}" mapperMethodToDtoPattern="to${DTO_NAME}" />
+</project>
