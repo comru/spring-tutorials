@@ -49,6 +49,6 @@ public class DataJpaApplication {
 
 	@Bean
 	AuditorAware<User> auditorProvider(UserService userService) {
-		return () -> Optional.ofNullable(userService.getCurrentUserNN());
+		return () -> Optional.ofNullable(userService.getCurrentUser());
 	}
 }

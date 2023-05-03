@@ -38,7 +38,7 @@ public class Article extends AbstractAuditableEntity {
     @Column(name = "body", nullable = false)
     private String body;
 
-    @ManyToMany
+    @ManyToMany(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
     @JoinTable(name = "article_tags",
             joinColumns = @JoinColumn(name = "article_id"),
             inverseJoinColumns = @JoinColumn(name = "tags_id"))
@@ -47,7 +47,7 @@ public class Article extends AbstractAuditableEntity {
     @OneToMany(mappedBy = "article", orphanRemoval = true)
     private Set<Comment> comments = new LinkedHashSet<>();
 
-    @ManyToMany
+    @ManyToMany(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
     @JoinTable(name = "article_favouring_users",
             joinColumns = @JoinColumn(name = "article_id"),
             inverseJoinColumns = @JoinColumn(name = "favouring_users_id"))
