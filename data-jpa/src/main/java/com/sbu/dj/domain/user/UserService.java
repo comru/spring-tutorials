@@ -72,7 +72,7 @@ public class UserService {
         SecurityContext securityContext = SecurityContextHolder.getContext();
         Authentication authentication = securityContext.getAuthentication();
 
-        if (authentication instanceof AnonymousAuthenticationToken) {
+        if (authentication == null || authentication instanceof AnonymousAuthenticationToken) {
             return null;
         }
 

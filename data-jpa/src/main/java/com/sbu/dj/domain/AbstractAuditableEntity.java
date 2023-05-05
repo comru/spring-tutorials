@@ -20,6 +20,7 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.experimental.Accessors;
 import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
@@ -32,6 +33,7 @@ import java.time.Instant;
  */
 @Getter
 @Setter
+@Accessors(chain = true)
 @MappedSuperclass
 public abstract class AbstractAuditableEntity extends BaseEntity {
 

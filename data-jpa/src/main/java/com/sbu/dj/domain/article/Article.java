@@ -5,7 +5,6 @@ import com.sbu.dj.domain.comment.Comment;
 import com.sbu.dj.domain.tag.Tag;
 import com.sbu.dj.domain.user.User;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
@@ -22,19 +21,15 @@ import java.util.Set;
 @EntityListeners(AuditingEntityListener.class)
 public class Article extends AbstractAuditableEntity {
 
-    @NotNull
     @Column(name = "slug", nullable = false)
     private String slug;
 
-    @NotNull
     @Column(name = "title", nullable = false)
     private String title;
 
-    @NotNull
     @Column(name = "description", nullable = false)
     private String description;
 
-    @NotNull
     @Column(name = "body", nullable = false)
     private String body;
 
