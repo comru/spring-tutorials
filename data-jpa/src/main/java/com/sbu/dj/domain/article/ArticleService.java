@@ -6,9 +6,12 @@ import com.sbu.dj.domain.tag.TagService;
 import com.sbu.dj.domain.user.User;
 import com.sbu.dj.domain.user.UserService;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Set;
 
@@ -37,12 +40,27 @@ public class ArticleService {
                 .orElseThrow(() -> new NoSuchElementException("Article not found: `%s`".formatted(slug)));
         ArticleResponse articleResponse = articleMapper.toArticleResponse(article);
 
+        initArticleResponse(article, articleResponse);
+
+        return articleResponse;
+    }
+
+    @Transactional(readOnly = true)
+    public List<ArticleResponse> getArticles(String tag, String author, String favorited, int offset, int limit) {
+        Page<Article> resultArticles = articleRepository.findByFacets(tag, author, favorited, PageRequest.of(offset, limit));
+        Page<ArticleResponse> articleResponsePage = resultArticles.map(article -> {
+            ArticleResponse articleResponse = articleMapper.toArticleResponse(article);
+            initArticleResponse(article, articleResponse);
+            return articleResponse;
+        });
+        return articleResponsePage.getContent();
+    }
+
+    private void initArticleResponse(Article article, ArticleResponse articleResponse) {
         User currentUser = userService.getCurrentUser();
         Set<User> favouringUsers = article.getFavouringUsers();
         articleResponse.setFavorited(currentUser != null && favouringUsers.contains(currentUser));
         articleResponse.setFavoritesCount(favouringUsers.size());
         articleResponse.getAuthor().setFollowing(currentUser != null && currentUser.getFollowings().contains(article.getAuthor()));
-
-        return articleResponse;
     }
 }

@@ -1,21 +1,19 @@
 package com.sbu.dj.domain.article.dto;
 
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.sbu.dj.domain.article.Article;
 import com.sbu.dj.domain.user.UserDto;
 import lombok.Data;
 
 import java.io.Serializable;
 import java.time.Instant;
+import java.util.List;
 import java.util.Set;
 
 /**
  * DTO for {@link Article}
  */
 @Data
-@JsonTypeName("article")
-@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.WRAPPER_OBJECT)
 public class ArticleResponse implements Serializable {
 
     @JsonTypeInfo(use = JsonTypeInfo.Id.NONE)
@@ -29,4 +27,16 @@ public class ArticleResponse implements Serializable {
     private Set<String> tagList;
     private boolean favorited;
     private int favoritesCount;
+
+    public record Multiple(
+            List<ArticleResponse> articles,
+            int articlesCount) {
+
+        public Multiple(List<ArticleResponse> articles) {
+            this(articles, articles.size());
+        }
+    }
+
+    public record Single(ArticleResponse article) {
+    }
 }

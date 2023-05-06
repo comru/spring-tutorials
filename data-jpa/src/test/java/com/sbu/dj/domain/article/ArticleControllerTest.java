@@ -100,6 +100,23 @@ public class ArticleControllerTest {
                 .andDo(print());
     }
 
+    @Test
+    void getArticles() throws Exception {
+        logTestName();
+        mockMvc.perform(get("/articles")
+                        .param("tag", "java")
+                        .param("author", "james")
+                        .param("favorited", "simpson"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.articlesCount").value(1))
+                .andExpect(jsonPath("$.articles[0].title").value("Effective Java"))
+                .andExpect(jsonPath("$.articles[0].author.username").value("james"))
+                .andExpect(jsonPath("$.articles[0].favorited").value(false))
+                .andExpect(jsonPath("$.articles[0].favoritesCount").value(3))
+                .andExpect(jsonPath("$.articles[0].tagList[0]").value("java"))
+                .andDo(print());
+    }
+
     private void logTestName() {
         logger.info("Run '" + testInfo.getDisplayName() + "' test");
     }
