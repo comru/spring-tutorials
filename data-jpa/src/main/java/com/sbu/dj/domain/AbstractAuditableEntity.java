@@ -40,12 +40,12 @@ public abstract class AbstractAuditableEntity extends BaseEntity {
 	@NotNull
 	@CreatedBy
 	@ManyToOne(optional = false, fetch = FetchType.LAZY)
-	@JoinColumn(name = "author_id", nullable = false)
+	@JoinColumn(name = "author_id", nullable = false, updatable = false)
 	private User author;
 
 	@NotNull
 	@CreatedDate
-	@Column(name = "created_at", nullable = false)
+	@Column(name = "created_at", nullable = false, updatable = false)
 	private Instant createdAt;
 
 	@NotNull

@@ -1,8 +1,10 @@
 package com.sbu.dj.domain.article;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.jayway.jsonpath.JsonPath;
 import com.sbu.dj.IntegrationTest;
 import com.sbu.dj.domain.article.dto.ArticleNew;
+import com.sbu.dj.domain.article.dto.ArticleUpdate;
 import com.sbu.dj.domain.tag.TagRepository;
 import com.sbu.dj.domain.user.UserDto;
 import com.sbu.dj.domain.user.UserService;
@@ -19,12 +21,11 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
+import java.util.Map;
 import java.util.Set;
 
-import static org.hamcrest.Matchers.containsInAnyOrder;
-import static org.hamcrest.Matchers.hasSize;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.hamcrest.Matchers.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -132,10 +133,49 @@ public class ArticleControllerTest {
                         jsonPath("$.articles[0].title").value("Effective Java"),
                         jsonPath("$.articles[0].author.username").value("james"),
                         jsonPath("$.articles[0].favorited").value(true),
-                        jsonPath("$.articles[0].favorited").value(true),
                         jsonPath("$.articles[0].favoritesCount").value(3),
                         jsonPath("$.articles[0].tagList[0]").value("java")
                 )
+                .andDo(print());
+    }
+
+    @Test
+    public void updateArticle() throws Exception {
+        // given
+        // - create a test article
+        ArticleNew createRequest =
+                new ArticleNew("Test Article", "Test description", "Test body", Set.of("test", "sample"));
+
+        // - get the slug of the article
+        Map<String, Object> articleResponce = JsonPath.parse(mockMvc.perform(post("/articles")
+                                .header("Authorization", jamesToken)
+                                .content(objectMapper.writeValueAsString(Map.of("article", createRequest)))
+                                .contentType(MediaType.APPLICATION_JSON))
+                        .andReturn()
+                        .getResponse()
+                        .getContentAsString())
+                .json();
+
+        Map<String, Object> articleMap = (Map<String, Object>) articleResponce.get("article");
+        Object slug = articleMap.get("slug");
+        // when
+        // - update the article
+        ArticleUpdate updateRequest =
+                new ArticleUpdate("Updated Title", "Updated description", "Updated body");
+        ResultActions resultActions = mockMvc.perform(put("/articles/{slug}", slug)
+                .header("Authorization", jamesToken)
+                .content(objectMapper.writeValueAsString(Map.of("article", updateRequest)))
+                .contentType(MediaType.APPLICATION_JSON));
+
+        // then
+        resultActions
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.article.slug").value("updated-title"))
+                .andExpect(jsonPath("$.article.title").value("Updated Title"))
+                .andExpect(jsonPath("$.article.description").value("Updated description"))
+                .andExpect(jsonPath("$.article.body").value("Updated body"))
+                .andExpect(jsonPath("$.article.createdAt").value(articleMap.get("createdAt")))
+//                .andExpect(jsonPath("$.article.updatedAt").value(not(articleMap.get("updatedAt"))))
                 .andDo(print());
     }
 

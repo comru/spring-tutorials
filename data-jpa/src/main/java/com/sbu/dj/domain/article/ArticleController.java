@@ -2,6 +2,7 @@ package com.sbu.dj.domain.article;
 
 import com.sbu.dj.domain.article.dto.ArticleNew;
 import com.sbu.dj.domain.article.dto.ArticleResponse;
+import com.sbu.dj.domain.article.dto.ArticleUpdate;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -47,6 +48,11 @@ public class ArticleController {
     public ArticleResponse.Multiple getFeedArticles(@Nullable @RequestParam(required = false, name = "offset", defaultValue = "0") int offset,
                                                     @Nullable @RequestParam(required = false, name = "limit", defaultValue = "20") int limit) {
         return new ArticleResponse.Multiple(articleService.getFeedArticles(offset, limit));
+    }
+
+    @PutMapping("/{slug}")
+    public ArticleResponse.Single updateArticle(@PathVariable String slug, @RequestBody ArticleUpdate articleUpdate) {
+        return new ArticleResponse.Single(articleService.updateArticle(slug, articleUpdate));
     }
 }
 

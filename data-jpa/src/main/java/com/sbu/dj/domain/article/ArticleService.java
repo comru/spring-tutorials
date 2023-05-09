@@ -2,10 +2,12 @@ package com.sbu.dj.domain.article;
 
 import com.sbu.dj.domain.article.dto.ArticleNew;
 import com.sbu.dj.domain.article.dto.ArticleResponse;
+import com.sbu.dj.domain.article.dto.ArticleUpdate;
 import com.sbu.dj.domain.tag.TagService;
 import com.sbu.dj.domain.user.User;
 import com.sbu.dj.domain.user.UserService;
 import lombok.AllArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -28,11 +30,15 @@ public class ArticleService {
     public ArticleResponse createArticle(ArticleNew articleNew) {
         Article article = articleMapper.toArticle(articleNew);
         String title = articleNew.title();
-        article.setSlug(title.toLowerCase().replaceAll("\\s+", "-"));
+        article.setSlug(generateSlug(title));
         article.setTags(tagService.getOrCreateTags(articleNew.tagList()));
 
         Article savedArticle = articleRepository.save(article);
         return articleMapper.toArticleResponse(savedArticle);
+    }
+
+    private static String generateSlug(String title) {
+        return title.toLowerCase().replaceAll("\\s+", "-");
     }
 
     @Transactional(readOnly = true)
@@ -73,5 +79,25 @@ public class ArticleService {
             initArticleResponse(article, articleResponse);
             return articleResponse;
         }).toList();
+    }
+
+    @Transactional
+    public ArticleResponse updateArticle(String slug, ArticleUpdate articleUpdate) {
+        return articleRepository
+                .findBySlug(slug)
+                .map(article -> {
+                    Article updatedArticle = articleMapper.partialUpdate(articleUpdate, article);
+                    String title = articleUpdate.title();
+                    if (StringUtils.isNotBlank(title)) {
+                        updatedArticle.setSlug(generateSlug(title));
+                    }
+                    return updatedArticle;
+                })
+                .map(article -> {
+                    ArticleResponse articleResponse = articleMapper.toArticleResponse(article);
+                    initArticleResponse(article, articleResponse);
+                    return articleResponse;
+                })
+                .orElseThrow(() -> new NoSuchElementException("Article not found by slug: `%s`".formatted(slug)));
     }
 }
