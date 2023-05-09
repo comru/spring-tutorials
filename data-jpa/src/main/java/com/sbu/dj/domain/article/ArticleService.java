@@ -13,10 +13,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Set;
+import java.util.*;
 
 @AllArgsConstructor
 @Service
@@ -99,5 +96,20 @@ public class ArticleService {
                     return articleResponse;
                 })
                 .orElseThrow(() -> new NoSuchElementException("Article not found by slug: `%s`".formatted(slug)));
+    }
+
+    @Transactional
+    public void deleteArticle(String slug) {
+        articleRepository
+                .findBySlug(slug)
+                .ifPresentOrElse(
+                        article -> {
+                            User currentUser = userService.getCurrentUserNN();
+                            if (article.getAuthor().equals(currentUser)) articleRepository.delete(article);
+                            else throw new IllegalArgumentException("You cannot delete articles written by others.");
+                        },
+                        () -> {
+                            throw new NoSuchElementException("Article not found by slug: `%s`".formatted(slug));
+                        });
     }
 }

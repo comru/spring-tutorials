@@ -9,6 +9,7 @@ import com.sbu.dj.domain.tag.TagRepository;
 import com.sbu.dj.domain.user.UserDto;
 import com.sbu.dj.domain.user.UserService;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInfo;
 import org.junit.runner.RunWith;
@@ -21,6 +22,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -177,6 +179,31 @@ public class ArticleControllerTest {
                 .andExpect(jsonPath("$.article.createdAt").value(articleMap.get("createdAt")))
 //                .andExpect(jsonPath("$.article.updatedAt").value(not(articleMap.get("updatedAt"))))
                 .andDo(print());
+    }
+
+    @Test
+    public void deleteArticle() throws Exception {
+        // given
+        // - create a test article
+        ArticleNew createRequest =
+                new ArticleNew("Test Article", "Test description", "Test body", Set.of("test", "sample"));
+
+        // - get the slug of the article
+        String slug = JsonPath.parse(mockMvc.perform(post("/articles")
+                                .header("Authorization", jamesToken)
+                                .content(objectMapper.writeValueAsString(Map.of("article", createRequest)))
+                                .contentType(MediaType.APPLICATION_JSON))
+                        .andReturn()
+                        .getResponse()
+                        .getContentAsString())
+                .read("$.article.slug");
+
+        // when
+        ResultActions resultActions =
+                mockMvc.perform(delete("/articles/{slug}", slug).header("Authorization", jamesToken));
+
+        // then
+        resultActions.andExpect(status().isOk()).andDo(print());
     }
 
     private void logTestName() {

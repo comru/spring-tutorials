@@ -54,5 +54,10 @@ public class ArticleController {
     public ArticleResponse.Single updateArticle(@PathVariable String slug, @RequestBody ArticleUpdate articleUpdate) {
         return new ArticleResponse.Single(articleService.updateArticle(slug, articleUpdate));
     }
+
+    @DeleteMapping("/{slug}")
+    public void deleteArticle(@PathVariable String slug) {
+        articleService.deleteArticle(slug);
+    }
 }
 
