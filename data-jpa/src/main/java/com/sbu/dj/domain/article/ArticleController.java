@@ -42,5 +42,11 @@ public class ArticleController {
         List<ArticleResponse> articles = articleService.getArticles(tag, author, favorited, offset, limit);
         return new ArticleResponse.Multiple(articles);
     }
+
+    @GetMapping("/feed")
+    public ArticleResponse.Multiple getFeedArticles(@Nullable @RequestParam(required = false, name = "offset", defaultValue = "0") int offset,
+                                                    @Nullable @RequestParam(required = false, name = "limit", defaultValue = "20") int limit) {
+        return new ArticleResponse.Multiple(articleService.getFeedArticles(offset, limit));
+    }
 }
 

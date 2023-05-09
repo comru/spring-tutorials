@@ -11,6 +11,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Set;
@@ -62,5 +63,15 @@ public class ArticleService {
         articleResponse.setFavorited(currentUser != null && favouringUsers.contains(currentUser));
         articleResponse.setFavoritesCount(favouringUsers.size());
         articleResponse.getAuthor().setFollowing(currentUser != null && currentUser.getFollowings().contains(article.getAuthor()));
+    }
+
+    public List<ArticleResponse> getFeedArticles(int offset, int limit) {
+        Collection<User> authors = userService.getCurrentUserNN().getFollowings();
+        List<Article> resultArticles = articleRepository.findByAuthorInOrderByCreatedAtDesc(authors, PageRequest.of(offset, limit));
+        return resultArticles.stream().map(article -> {
+            ArticleResponse articleResponse = articleMapper.toArticleResponse(article);
+            initArticleResponse(article, articleResponse);
+            return articleResponse;
+        }).toList();
     }
 }

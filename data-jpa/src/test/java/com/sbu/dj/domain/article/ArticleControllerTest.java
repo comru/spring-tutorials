@@ -22,6 +22,7 @@ import org.springframework.test.web.servlet.ResultActions;
 import java.util.Set;
 
 import static org.hamcrest.Matchers.containsInAnyOrder;
+import static org.hamcrest.Matchers.hasSize;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -52,6 +53,7 @@ public class ArticleControllerTest {
     private String jamesToken;
 
     private TestInfo testInfo;
+    private String simpsonToken;
 
     @BeforeEach
     void setUp(TestInfo testInfo) {
@@ -59,12 +61,15 @@ public class ArticleControllerTest {
 
         UserDto.LoginUser jamesLoginRequest = new UserDto.LoginUser("james@gmail.com", "1234");
         jamesToken = "Token " + userService.login(jamesLoginRequest).token();
+
+        UserDto.LoginUser simpsonLoginRequest = new UserDto.LoginUser("simpson@gmail.com", "1234");
+        simpsonToken = "Token " + userService.login(simpsonLoginRequest).token();
+
+        logTestName();
     }
 
     @Test
     void createArticle() throws Exception {
-        logTestName();
-
         // given
         ArticleNew request =
                 new ArticleNew("Test Article", "Test description", "Test body", Set.of("test", "performance", "sample", "java"));
@@ -89,7 +94,6 @@ public class ArticleControllerTest {
 
     @Test
     void getSingleArticle() throws Exception {
-        logTestName();
         mockMvc.perform(get("/articles/{slug}", "effective-java"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.article.title").value("Effective Java"))
@@ -102,7 +106,6 @@ public class ArticleControllerTest {
 
     @Test
     void getArticles() throws Exception {
-        logTestName();
         mockMvc.perform(get("/articles")
                         .param("tag", "java")
                         .param("author", "james")
@@ -114,6 +117,25 @@ public class ArticleControllerTest {
                 .andExpect(jsonPath("$.articles[0].favorited").value(false))
                 .andExpect(jsonPath("$.articles[0].favoritesCount").value(3))
                 .andExpect(jsonPath("$.articles[0].tagList[0]").value("java"))
+                .andDo(print());
+    }
+
+    @Test
+    void getFeedArticles() throws Exception {
+        mockMvc.perform(get("/articles/feed").header("Authorization", simpsonToken))
+                .andExpectAll(
+                        status().isOk(),
+                        jsonPath("$.articlesCount").value(1),
+                        jsonPath("$.articles", hasSize(1)),
+                        jsonPath("$.articles[0].author.username").value("james"),
+                        jsonPath("$.articles[0].author.following").value(true),
+                        jsonPath("$.articles[0].title").value("Effective Java"),
+                        jsonPath("$.articles[0].author.username").value("james"),
+                        jsonPath("$.articles[0].favorited").value(true),
+                        jsonPath("$.articles[0].favorited").value(true),
+                        jsonPath("$.articles[0].favoritesCount").value(3),
+                        jsonPath("$.articles[0].tagList[0]").value("java")
+                )
                 .andDo(print());
     }
 
