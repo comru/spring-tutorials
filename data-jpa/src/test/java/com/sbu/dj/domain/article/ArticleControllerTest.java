@@ -97,6 +97,8 @@ public class ArticleControllerTest {
                 .andExpect(jsonPath("$.article.tagList", containsInAnyOrder("test", "performance", "sample", "java")))
                 .andExpect(jsonPath("$.article.author.username").value("james"))
                 .andDo(print());
+
+        articleRepository.deleteBySlug("test-article");
     }
 
     @Test
@@ -183,6 +185,8 @@ public class ArticleControllerTest {
                 .andExpect(jsonPath("$.article.createdAt").value(articleMap.get("createdAt")))
 //                .andExpect(jsonPath("$.article.updatedAt").value(not(articleMap.get("updatedAt"))))
                 .andDo(print());
+
+        articleRepository.deleteBySlug("test-article");
     }
 
     @Test
@@ -208,6 +212,8 @@ public class ArticleControllerTest {
 
         // then
         resultActions.andExpect(status().isOk()).andDo(print());
+
+        articleRepository.deleteBySlug("test-article");
     }
 
     @Test
@@ -242,6 +248,8 @@ public class ArticleControllerTest {
                 .andExpect(jsonPath("$.comment.body").value("Test comment"))
                 .andExpect(jsonPath("$.comment.author.username").value("simpson"))
                 .andDo(print());
+
+        articleRepository.deleteBySlug("test-article");
     }
 
     @Test
@@ -279,5 +287,7 @@ public class ArticleControllerTest {
                 .andExpect(jsonPath("$.comments[0].body").value("Test comment"))
                 .andExpect(jsonPath("$.comments[0].author.username").value("simpson"))
                 .andDo(print());
+
+        articleRepository.deleteBySlug("test-article");
     }
 }
