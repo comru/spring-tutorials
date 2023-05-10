@@ -3,6 +3,8 @@ package com.sbu.dj.domain.article;
 import com.sbu.dj.domain.article.dto.ArticleNew;
 import com.sbu.dj.domain.article.dto.ArticleResponse;
 import com.sbu.dj.domain.article.dto.ArticleUpdate;
+import com.sbu.dj.domain.comment.dto.CommentNew;
+import com.sbu.dj.domain.comment.dto.CommentResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -58,6 +60,11 @@ public class ArticleController {
     @DeleteMapping("/{slug}")
     public void deleteArticle(@PathVariable String slug) {
         articleService.deleteArticle(slug);
+    }
+
+    @PostMapping("/{slug}/comments")
+    public CommentResponse.Single createComment(@PathVariable String slug, @RequestBody CommentNew commentNew) {
+        return new CommentResponse.Single(articleService.createComment(slug, commentNew));
     }
 }
 

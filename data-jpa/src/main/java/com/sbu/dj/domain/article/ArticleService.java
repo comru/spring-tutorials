@@ -3,6 +3,9 @@ package com.sbu.dj.domain.article;
 import com.sbu.dj.domain.article.dto.ArticleNew;
 import com.sbu.dj.domain.article.dto.ArticleResponse;
 import com.sbu.dj.domain.article.dto.ArticleUpdate;
+import com.sbu.dj.domain.comment.*;
+import com.sbu.dj.domain.comment.dto.CommentNew;
+import com.sbu.dj.domain.comment.dto.CommentResponse;
 import com.sbu.dj.domain.tag.TagService;
 import com.sbu.dj.domain.user.User;
 import com.sbu.dj.domain.user.UserService;
@@ -22,6 +25,8 @@ public class ArticleService {
     private final ArticleMapper articleMapper;
     private final TagService tagService;
     private final UserService userService;
+    private final CommentRepository commentRepository;
+    private final CommentMapper commentMapper;
 
     @Transactional
     public ArticleResponse createArticle(ArticleNew articleNew) {
@@ -111,5 +116,27 @@ public class ArticleService {
                         () -> {
                             throw new NoSuchElementException("Article not found by slug: `%s`".formatted(slug));
                         });
+    }
+
+    @Transactional
+    public CommentResponse createComment(String slug, CommentNew commentNew) {
+        return articleRepository
+                .findBySlug(slug)
+                .map(article -> new Comment()
+                        .setArticle(article)
+                        .setBody(commentNew.body()))
+                .map(commentRepository::save)
+                .map(comment -> {
+                    CommentResponse commentResponse = commentMapper.toDto(comment);
+                    initComment(comment, commentResponse);
+                    return commentResponse;
+                })
+                .orElseThrow(() -> new NoSuchElementException("Article not found by slug: `%s`".formatted(slug)));
+    }
+
+    private void initComment(Comment comment, CommentResponse commentResponse) {
+        User currentUser = userService.getCurrentUser();
+        commentResponse.author().setFollowing(
+                currentUser != null && currentUser.getFollowings().contains(comment.getAuthor()));
     }
 }

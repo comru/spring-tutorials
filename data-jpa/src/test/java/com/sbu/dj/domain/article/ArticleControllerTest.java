@@ -5,11 +5,11 @@ import com.jayway.jsonpath.JsonPath;
 import com.sbu.dj.IntegrationTest;
 import com.sbu.dj.domain.article.dto.ArticleNew;
 import com.sbu.dj.domain.article.dto.ArticleUpdate;
+import com.sbu.dj.domain.comment.dto.CommentNew;
 import com.sbu.dj.domain.tag.TagRepository;
 import com.sbu.dj.domain.user.UserDto;
 import com.sbu.dj.domain.user.UserService;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInfo;
 import org.junit.runner.RunWith;
@@ -22,7 +22,6 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -69,6 +68,10 @@ public class ArticleControllerTest {
         simpsonToken = "Token " + userService.login(simpsonLoginRequest).token();
 
         logTestName();
+    }
+
+    private void logTestName() {
+        logger.info("Run '" + testInfo.getDisplayName() + "' test");
     }
 
     @Test
@@ -206,7 +209,37 @@ public class ArticleControllerTest {
         resultActions.andExpect(status().isOk()).andDo(print());
     }
 
-    private void logTestName() {
-        logger.info("Run '" + testInfo.getDisplayName() + "' test");
+    @Test
+    public void createComment() throws Exception {
+        // given
+        // - create a test article
+        ArticleNew createRequest =
+                new ArticleNew("Test Article", "Test description", "Test body", Set.of("test", "sample"));
+
+        // - get the slug of the article by james
+        String slug = JsonPath.parse(mockMvc.perform(post("/articles")
+                                .header("Authorization", jamesToken)
+                                .content(objectMapper.writeValueAsString(Map.of("article", createRequest)))
+                                .contentType(MediaType.APPLICATION_JSON))
+                        .andReturn()
+                        .getResponse()
+                        .getContentAsString())
+                .read("$.article.slug");
+
+        // - create a comment by simpson
+        CommentNew request = new CommentNew("Test comment");
+
+        // when
+        ResultActions resultActions = mockMvc.perform(post("/articles/{slug}/comments", slug)
+                .header("Authorization", simpsonToken)
+                .content(objectMapper.writeValueAsString(Map.of("comment", request)))
+                .contentType(MediaType.APPLICATION_JSON));
+
+        // then
+        resultActions
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.comment.body").value("Test comment"))
+                .andExpect(jsonPath("$.comment.author.username").value("simpson"))
+                .andDo(print());
     }
 }
