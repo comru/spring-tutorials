@@ -10,6 +10,7 @@ import com.sbu.dj.domain.tag.TagRepository;
 import com.sbu.dj.domain.user.UserDto;
 import com.sbu.dj.domain.user.UserService;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInfo;
 import org.junit.runner.RunWith;
@@ -240,6 +241,43 @@ public class ArticleControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.comment.body").value("Test comment"))
                 .andExpect(jsonPath("$.comment.author.username").value("simpson"))
+                .andDo(print());
+    }
+
+    @Test
+    public void getComments() throws Exception {
+        // given
+        // - create a test article
+        ArticleNew createRequest =
+                new ArticleNew("Test Article", "Test description", "Test body", Set.of("test", "sample"));
+
+        // - get the slug of the article by james
+        String slug = JsonPath.parse(mockMvc.perform(post("/articles")
+                                .header("Authorization", jamesToken)
+                                .content(objectMapper.writeValueAsString(Map.of("article", createRequest)))
+                                .contentType(MediaType.APPLICATION_JSON))
+                        .andReturn()
+                        .getResponse()
+                        .getContentAsString())
+                .read("$.article.slug");
+
+        // - create a comment by simpson
+        CommentNew request = new CommentNew("Test comment");
+
+        mockMvc.perform(post("/articles/{slug}/comments", slug)
+                .header("Authorization", simpsonToken)
+                .content(objectMapper.writeValueAsString(Map.of("comment", request)))
+                .contentType(MediaType.APPLICATION_JSON));
+
+        // when
+        ResultActions resultActions = mockMvc.perform(get("/articles/{slug}/comments", slug));
+
+        // then
+        resultActions
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.comments", hasSize(1)))
+                .andExpect(jsonPath("$.comments[0].body").value("Test comment"))
+                .andExpect(jsonPath("$.comments[0].author.username").value("simpson"))
                 .andDo(print());
     }
 }

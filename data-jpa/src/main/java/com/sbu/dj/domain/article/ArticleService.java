@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @AllArgsConstructor
 @Service
@@ -132,6 +133,13 @@ public class ArticleService {
                     return commentResponse;
                 })
                 .orElseThrow(() -> new NoSuchElementException("Article not found by slug: `%s`".formatted(slug)));
+    }
+
+    public List<CommentResponse> getArticleComments(String slug) {
+        List<Comment> resultComments = commentRepository.findByArticle_SlugOrderByCreatedAtDesc(slug);
+        return resultComments.stream()
+                .map(commentMapper::toDto)
+                .collect(Collectors.toList());
     }
 
     private void initComment(Comment comment, CommentResponse commentResponse) {

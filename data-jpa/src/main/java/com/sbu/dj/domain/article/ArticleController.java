@@ -66,5 +66,10 @@ public class ArticleController {
     public CommentResponse.Single createComment(@PathVariable String slug, @RequestBody CommentNew commentNew) {
         return new CommentResponse.Single(articleService.createComment(slug, commentNew));
     }
+
+    @GetMapping("/{slug}/comments")
+    public CommentResponse.Multiple getArticleComments(@PathVariable String slug) {
+        return new CommentResponse.Multiple(articleService.getArticleComments(slug));
+    }
 }
 
