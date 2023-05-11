@@ -7,21 +7,6 @@
           <package value="com.sbu.dj" />
         </packages>
       </persistence-unit>
-      <persistence-unit moduleName="data-jdbc.main" name="Default">
-        <packages>
-          <package value="com.sbu.dj" />
-        </packages>
-      </persistence-unit>
-      <persistence-unit moduleName="web-client.main" name="Default">
-        <packages>
-          <package value="com.sbu.wc" />
-        </packages>
-      </persistence-unit>
-      <persistence-unit moduleName="data-mongodb.main" name="Default">
-        <packages>
-          <package value="com.sbu.dm" />
-        </packages>
-      </persistence-unit>
     </persistence-units>
   </component>
 </project>
